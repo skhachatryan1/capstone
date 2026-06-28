@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ .Release.Name }}-front-deployment
+    namespace: apex-app
+    labels: 
+        workload: frontend
+spec: 
+    replicas: {{ .Values.frontend.replicas }}
+    selector: 
+        matchLabels:
+            workload: frontend
+    template:
+        metadata:
+            labels:
+                workload: frontend
+        spec:
+            imagePullSecrets:
+                - name: nexus-creds
+            initContainers:
+                - name: wait-for-back
+                  image: busybox:1.36
+                  command: 
+                    - sh
+                    - -c
+                    - |
+                      until nc -z -w 2 {{ .Release.Name }}-backend-svc 80; do
+                        echo "waiting for backend service to accept connection on port {{ .Values.backend.port }}..."
+                        sleep 2
+                      done
+            containers: 
+                - name: apex-frontend
+                  image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+                  imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+                  ports: 
+                    - containerPort: {{ .Values.frontend.port }}

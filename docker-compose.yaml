@@ -1,0 +1,63 @@
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  backend:
+    build: backend/
+    container_name: apex-backend
+    ports:
+      - "5001:5001"
+      - "9091:9091"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_USER: dev_user
+      DB_PASS: pass
+      DB_NAME: dev_db
+      DB_PORT: 5432
+      PORT: 5001
+      METRICS_PORT: 9091
+      CORS_ORIGIN: http://localhost:5002
+      SALT: 10
+      JWT_ACCESS_SECRET: dauiguiqgdb=436346362425hdhwubascbvasgdgauisdguiadg
+      JWT_REFRESH_SECRET: egfgsvchjavdg463452346=3sieufiosnchgih2362374-=--2-267265982gd
+      JWT_ACCESS_EXPIRES_IN: 1h
+      JWT_REFRESH_EXPIRES_IN: 14d
+    networks:
+      - "app-network"
+  db:
+    image: postgres:15
+    container_name: apex-db
+    restart: always
+    environment:
+      POSTGRES_DB: dev_db
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: pass
+    networks:
+      - "app-network"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev_user -d dev_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  frontend:
+    build: 
+      context: frontend/
+      args:
+        VITE_API_URL: http://localhost:5001/api
+    container_name: apex-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - "app-network"
+
+volumes:
+  db-data:

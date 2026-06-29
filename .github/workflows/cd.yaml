@@ -1,0 +1,99 @@
+name: "cd"
+on:
+  workflow_run:
+    workflows:
+      - "ci"
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    outputs:
+      nexus_ip: ${{ steps.get_nexus_ip.outputs.nexus_ip }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: terraform init
+        working-directory: ./terraform
+        run: terraform init
+
+      - name: terraform apply
+        working-directory: ./terraform
+        run: terraform apply -auto-approve
+        env:
+          TF_VAR_project: "gd-gcp-internship-devops"
+          TF_VAR_region: "us-central1"
+          TF_VAR_nexus_user: ${{ secrets.NEXUS_USER }}
+          TF_VAR_nexus_pass: ${{ secrets.NEXUS_PASS }}
+          TF_VAR_jwt_access_secret: ${{ secrets.JWT_ACCESS_SECRET }}
+          TF_VAR_jwt_refresh_secret: ${{ secrets.JWT_REFRESH_SECRET }}
+          TF_VAR_salt: ${{ secrets.SALT }}
+          TF_VAR_jwt_access_expires_in: "1h"
+          TF_VAR_jwt_refresh_expires_in: "14d"
+      - name: get_nexus_ip
+        id: get_nexus_ip
+        working-directory: ./terraform
+        run: echo "nexus_ip=$(terraform output -raw nexus_ip)" >> $GITHUB_OUTPUT
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: ["terraform"]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: allow insecure registries
+        run: |
+          echo '{"insecure-registries": ["${{needs.terraform.outputs.nexus_ip}}:8082"]}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+
+      - name: login to nexus
+        run: docker login ${{needs.terraform.outputs.nexus_ip}}:8082 -u ${{ secrets.NEXUS_USER}} -p ${{ secrets.NEXUS_PASS }}
+
+      - name: build and push backend
+        run: |
+          docker build -t ${{needs.terraform.outputs.nexus_ip}}:8082/apex:backend ./backend
+          docker push ${{needs.terraform.outputs.nexus_ip}}:8082/apex:backend
+
+      - name: build and push frontend
+        run: |
+          docker build -t ${{needs.terraform.outputs.nexus_ip}}:8082/apex:frontend ./frontend
+          docker push ${{needs.terraform.outputs.nexus_ip}}:8082/apex:frontend
+
+  kubernetes:
+    runs-on: ubuntu-latest
+    needs: ["docker", "terraform"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: apex-gke-cluster
+          location: us-central1
+          project_id: gd-gcp-internship-devops
+
+      - uses: azure/setup-helm@v4
+
+      - name: helm deploy
+        run: |
+          helm upgrade --install apex ./k8s/apex-app \
+           --namespace apex-app \
+           --set backend.image.repository=${{needs.terraform.outputs.nexus_ip}}:8082/apex \
+           --set backend.image.tag=backend \
+           --set frontend.image.repository=${{needs.terraform.outputs.nexus_ip}}:8082/apex \
+           --set frontend.image.tag=frontend

@@ -84,28 +84,3 @@ jobs:
       - name: test
         run: npm run test:ci
         working-directory: ./frontend
-
-  docker:
-    runs-on: ubuntu-latest
-    needs: ["frontend", "backend"]
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-
-      - name: allow insecure registries
-        run: |
-          echo '{"insecure-registries": ["34.9.41.218:8082"]}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
-
-      - name: login to nexus
-        run: docker login 34.9.41.218:8082 -u admin -p admin123
-
-      - name: build and push backend
-        run: |
-          docker build -t 34.9.41.218:8082/apex:backend ./backend
-          docker push 34.9.41.218:8082/apex:backend
-
-      - name: build and push frontend
-        run: |
-          docker build -t 34.9.41.218:8082/apex:frontend ./frontend
-          docker push 34.9.41.218:8082/apex:frontend

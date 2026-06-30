@@ -89,6 +89,26 @@ jobs:
 
       - uses: azure/setup-helm@v4
 
+      - name: add helm repos
+        run: |
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo update
+
+      - name: deploy monitoring
+        run: |
+          helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+          --namespace apex-monitoring \
+          --set grafana.adminPassword=${{ secrets.GRAFANA_ADMIN_PASSWORD }} 
+
+          helm upgrade --install loki grafana/loki-stack \
+          --namespace apex-monitoring \
+          --set promtail.enabled=true
+
+      - name: deploy monitoring ingress
+        run: |
+          helm upgrade --install apex-monitoring ./k8s/apex-monitoring \
+          --namespace apex-monitoring
       - name: helm deploy
         run: |
           helm upgrade --install apex ./k8s/apex-app \

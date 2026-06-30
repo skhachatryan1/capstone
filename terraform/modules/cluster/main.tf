@@ -29,7 +29,6 @@ resource "google_container_node_pool" "app_nodes" {
   }
 }
 resource "google_container_node_pool" "nexus_nodes" {
-
   name     = "apex-nexus-node-pool"
   location = var.region
   cluster  = google_container_cluster.cluster.name
@@ -51,3 +50,24 @@ resource "google_container_node_pool" "nexus_nodes" {
   }
 }
 
+resource "google_container_node_pool" "monitoring_nodes" {
+  name     = "apex-monitoring-node-pool"
+  location = var.region
+  cluster  = google_container_cluster.cluster.name
+  autoscaling {
+    min_node_count = 1
+    max_node_count = 2
+  }
+  node_config {
+    preemptible  = false
+    machine_type = "e2-medium"
+    labels = {
+      workload = "monitoring"
+    }
+    taint {
+      key    = "workload"
+      value  = "monitoring"
+      effect = "NO_SCHEDULE"
+    }
+  }
+}

@@ -19,8 +19,10 @@ terraform {
   }
 }
 provider "google" {
-  project = var.project
-  region  = var.region
+  project               = var.project
+  region                = var.region
+  user_project_override = true
+  billing_project       = var.project
 }
 
 data "google_client_config" "default" {}

@@ -22,6 +22,7 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
           create_credentials_file: true
+          export_environment_variables: true
 
       - uses: hashicorp/setup-terraform@v3
 

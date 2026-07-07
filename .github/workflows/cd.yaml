@@ -18,11 +18,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-          create_credentials_file: true
-          export_environment_variables: true
+      # - uses: google-github-actions/auth@v2
+      #   with:
+      #     credentials_json: ${{ secrets.GCP_SA_KEY }}
+      #     create_credentials_file: true
+      #     export_environment_variables: true
+
+      - name: auth with User Credentials (ADC)
+        run: |
+          echo '${{ secrets.GCP_SA_KEY }}' > ${{ github.workspace }}/adc.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${{github.workspace }}/adc.json" >> $GITHUB_ENV
+          echo "CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE=${{ github.workspace }}/adc.json" >> $GITHUB_ENV
 
       - uses: hashicorp/setup-terraform@v3
 

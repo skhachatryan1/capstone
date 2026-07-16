@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Guard agains accidental runs
         run: |
-          if [ "${{ github.event.input.confirm }}" != "destroy" ]; than
+          if [ "${{ github.event.inputs.confirm }}" != "destroy" ]; then
             echo "Confirmation text did not match. Aborting"
             exit 1
           fi

@@ -18,6 +18,17 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
+      # - name: auth to GCP
+      #   uses: google-github-actions/auth@v2
+      #   with:
+      #     credentials_json: ${{ secrets.GCP_SA_KEY}}
+
+      - name: auth with User Credentials (ADC)
+        run: |
+          echo '${{ secrets.GCP_SA_KEY }}' > ${{ github.workspace }}/adc.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${{github.workspace }}/adc.json" >> $GITHUB_ENV
+          echo "CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE=${{ github.workspace }}/adc.json" >> $GITHUB_ENV
+
       - name: setup terraform
         uses: hashicorp/setup-terraform@v3
         with:

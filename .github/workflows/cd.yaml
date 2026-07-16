@@ -1,12 +1,12 @@
 name: "cd"
 on:
-  workflow_run:
-    workflows:
-      - "ci"
-    types:
-      - completed
-    branches:
-      - main
+  # workflow_run:
+  #   workflows:
+  #     - "ci"
+  #   types:
+  #     - completed
+  #   branches:
+  #     - main
   workflow_dispatch:
 
 jobs:

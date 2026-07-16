@@ -11,6 +11,12 @@ resource "google_sql_database_instance" "database_instance" {
       private_network = var.network
     }
   }
+
+  timeouts {
+    create = "60m"
+    update = "40m"
+    delete = "40m"
+  }
   depends_on = [
     var.networking_connection
   ]

@@ -113,3 +113,13 @@ resource "nexus_repository_docker_hosted" "docker_registry" {
     write_policy                   = "ALLOW"
   }
 }
+
+resource "nexus_security_realms" "active_realms" {
+  depends_on = [nexus_repository_docker_hosted.docker_registry]
+
+  active = [
+    "NexusAuthenticatingRealm",
+    "NexusAuthorizingRealm",
+    "DockerToken"
+  ]
+}

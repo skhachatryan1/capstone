@@ -70,15 +70,15 @@ jobs:
           sleep 3
           docker info | grep -i "Insecure Registries" -A 1
 
-      - name: Enable Nexus Docker Bearer Token Realm
-        env:
-          NEXUS_IP: ${{needs.terraform.outputs.nexus_ip}}
-        run: |
-          echo "Activating Docker Bearer Token Realm..."
-          curl -sS -f -i -X PUT "http://$NEXUS_IP:8081/service/rest/v1/security/realms/active" \
-            -u ${{ secrets.NEXUS_USER}}:${{ secrets.NEXUS_PASS}} \
-            -H "Content-Type: application/json" \
-            -d '["NexusAuthenticatingRealm", "NexusAuthorizingRealm", "DockerToken"]'
+      # - name: Enable Nexus Docker Bearer Token Realm
+      #   env:
+      #     NEXUS_IP: ${{needs.terraform.outputs.nexus_ip}}
+      #   run: |
+      #     echo "Activating Docker Bearer Token Realm..."
+      #     curl -sS -f -i -X PUT "http://$NEXUS_IP:8081/service/rest/v1/security/realms/active" \
+      #       -u ${{ secrets.NEXUS_USER}}:${{ secrets.NEXUS_PASS}} \
+      #       -H "Content-Type: application/json" \
+      #       -d '["NexusAuthenticatingRealm", "NexusAuthorizingRealm", "DockerToken"]'
 
       - name: login to nexus
         run: docker login ${{needs.terraform.outputs.nexus_ip}}:8082 -u ${{ secrets.NEXUS_USER}} -p ${{ secrets.NEXUS_PASS }}

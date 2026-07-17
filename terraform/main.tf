@@ -46,3 +46,6 @@ module "helm_app" {
   salt                   = var.salt
   ingress_ip             = module.network.ingress_ip
 }
+module "helm_monitoring" {
+  source = "./modules/helm_monitoring"
+}

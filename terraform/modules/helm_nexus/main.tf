@@ -9,7 +9,7 @@ resource "helm_release" "nexus" {
   chart      = "nexus-repository-manager"
   namespace  = kubernetes_namespace.nexus.metadata[0].name
 
-  timeout = 900
+  timeout = 90
 
   values = [yamlencode({
 

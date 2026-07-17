@@ -15,6 +15,8 @@ spec:
             labels:
                 workload: frontend
         spec:
+            nodeSelector:
+                workload: "app"
             imagePullSecrets:
                 - name: nexus-creds
             initContainers:

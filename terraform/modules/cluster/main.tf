@@ -22,7 +22,7 @@ resource "google_container_node_pool" "app_nodes" {
   }
   node_config {
     preemptible  = true
-    machine_type = "e2-medium"
+    machine_type = "e2-standard-2"
     labels = {
       "workload" = "app"
     }

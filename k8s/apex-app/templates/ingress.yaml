@@ -13,7 +13,7 @@ spec:
                   pathType: Prefix
                   backend:
                     service:
-                        name: apex-nexus-nexus-repository-manager.apex-nexus.svc.cluster.local
+                        name: nexus-local-proxy
                         port:
                             number: 8082 
                 - path: /api

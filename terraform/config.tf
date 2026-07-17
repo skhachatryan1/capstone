@@ -44,3 +44,10 @@ provider "helm" {
     cluster_ca_certificate = base64decode(module.cluster.cluster_ca_certificate)
   }
 }
+
+provider "nexus" {
+  url      = "http://${var.nexus_ip}:8081"
+  username = var.nexus_user
+  password = var.nexus_pass
+  insecure = true
+}

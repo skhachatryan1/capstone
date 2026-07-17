@@ -91,11 +91,7 @@ resource "kubernetes_service" "apex-nexus-lb" {
   }
 }
 
-provider "nexus" {
-  url      = "http://${var.nexus_ip}:8081"
-  username = var.nexus_user
-  password = var.nexus_pass
-}
+
 resource "nexus_repository_docker_hosted" "docker_registry" {
   name       = "apex-docker-registry"
   depends_on = [kubernetes_service.apex-nexus-lb]

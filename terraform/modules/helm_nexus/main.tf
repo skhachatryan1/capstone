@@ -91,7 +91,13 @@ resource "kubernetes_service" "apex-nexus-lb" {
   }
 }
 
-
+terraform {
+  required_providers {
+    nexus = {
+      source = "datadrivers/nexus"
+    }
+  }
+}
 resource "nexus_repository_docker_hosted" "docker_registry" {
   name       = "apex-docker-registry"
   depends_on = [kubernetes_service.apex-nexus-lb]

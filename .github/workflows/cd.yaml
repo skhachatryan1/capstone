@@ -61,6 +61,15 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
+      - name: allow insecure registries
+        env:
+          NEXUS_IP: ${{needs.terraform.outputs.nexus_ip}}
+        run: |
+          echo "{\"insecure-registries\": [\"$NEXUS_IP:8082\"]}" | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+          sleep 3
+          docker info | grep -i "Insecure Registries" -A 1
+
       - name: Enable Nexus Docker Bearer Token Realm
         env:
           NEXUS_IP: ${{needs.terraform.outputs.nexus_ip}}
@@ -70,15 +79,6 @@ jobs:
             -u ${{ secrets.NEXUS_USER}}:${{ secrets.NEXUS_PASS}} \
             -H "Content-Type: application/json" \
             -d '["NexusAuthenticatingRealm", "NexusAuthorizingRealm", "DockerToken"]'
-
-      - name: allow insecure registries
-        env:
-          NEXUS_IP: ${{needs.terraform.outputs.nexus_ip}}
-        run: |
-          echo "{\"insecure-registries\": [\"$NEXUS_IP:8082\"]}" | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
-          sleep 3
-          docker info | grep -i "Insecure Registries" -A 1
 
       - name: login to nexus
         run: docker login ${{needs.terraform.outputs.nexus_ip}}:8082 -u ${{ secrets.NEXUS_USER}} -p ${{ secrets.NEXUS_PASS }}

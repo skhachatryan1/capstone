@@ -119,7 +119,6 @@ resource "nexus_security_realms" "active_realms" {
 
   active = [
     "NexusAuthenticatingRealm",
-    "NexusAuthorizingRealm",
     "DockerToken"
   ]
 }

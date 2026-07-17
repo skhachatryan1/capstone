@@ -12,6 +12,7 @@ variable "ip_cidr_range" {
 variable "nexus_user" { type = string }
 variable "nexus_pass" { type = string }
 
+
 variable "jwt_access_secret" { type = string }
 variable "jwt_refresh_secret" { type = string }
 variable "salt" { type = string }

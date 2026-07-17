@@ -46,7 +46,7 @@ provider "helm" {
 }
 
 provider "nexus" {
-  url      = "http://${var.nexus_ip}:8081"
+  url      = "http://${module.network.nexus_ip}:8081"
   username = var.nexus_user
   password = var.nexus_pass
   insecure = true

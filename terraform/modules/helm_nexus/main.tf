@@ -90,3 +90,24 @@ resource "kubernetes_service" "apex-nexus-lb" {
     }
   }
 }
+
+provider "nexus" {
+  url        = "http://${var.nexus_ip}:8081"
+  username   = var.nexus_user
+  password   = var.nexus_pass
+  depends_on = [kubernetes_service.apex-nexus-lb]
+}
+resource "nexus_repository_docker_hosted" "docker_registry" {
+  name   = "apex-docker-registry"
+  online = true
+  docker {
+    force_basic_auth = false
+    v1_enabled       = false
+    http_port        = 8082
+  }
+  storage {
+    blob_store_name                = "default"
+    strict_content_type_validation = true
+    write_policy                   = "ALLOW"
+  }
+}

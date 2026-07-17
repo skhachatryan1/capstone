@@ -23,6 +23,8 @@ module "cluster" {
 module "helm_nexus" {
   source     = "./modules/helm_nexus"
   nexus_ip   = module.network.nexus_ip
+  nexus_user = var.nexus_user
+  nexus_pass = var.nexus_pass
   depends_on = [module.cluster]
 }
 module "helm_app" {

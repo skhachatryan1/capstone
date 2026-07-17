@@ -16,6 +16,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.35"
     }
+    nexus = {
+      source  = "sonatype-nexus-community/sonatyperepo"
+      version = "~> 1.13.0"
+    }
   }
 }
 provider "google" {

@@ -50,4 +50,5 @@ provider "nexus" {
   username = var.nexus_user
   password = var.nexus_pass
   insecure = true
+  timeout  = 300
 }

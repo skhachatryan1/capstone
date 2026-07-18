@@ -22,3 +22,5 @@ coverage/
 *.log
 
 /memory
+
+test-pull.yaml

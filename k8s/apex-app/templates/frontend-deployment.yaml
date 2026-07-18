@@ -32,7 +32,7 @@ spec:
                       done
             containers: 
                 - name: apex-frontend
-                  image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+                  image: "{{ .Values.global.repository }}:{{ .Values.frontend.image.tag }}"
                   imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
                   ports: 
                     - containerPort: {{ .Values.frontend.port }}

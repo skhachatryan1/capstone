@@ -1,13 +1,13 @@
+global:
+  repository: "PENDING"
 backend:
   image:
-    repository: apex-nexus-nexus-repository-manager.apex-nexus.svc.cluster.local
     tag: backend
     pullPolicy: Always
   port: 5001
   replicas: 2
 frontend:
   image:
-    repository: apex-nexus-nexus-repository-manager.apex-nexus.svc.cluster.local
     tag: frontend
     pullPolicy: Always
   port: 80

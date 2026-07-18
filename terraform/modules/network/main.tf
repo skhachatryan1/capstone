@@ -53,7 +53,7 @@ resource "google_compute_firewall" "apex-allow-kubectl" {
 
   allow {
     protocol = "TCP"
-    ports    = ["443", "10250"]
+    ports    = ["443", "10250", "8081", "8082"]
   }
   source_ranges = ["0.0.0.0/0"]
 }

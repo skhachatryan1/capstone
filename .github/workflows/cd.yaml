@@ -141,7 +141,6 @@ jobs:
         run: |
           helm upgrade --install apex ./k8s/apex-app \
            --namespace apex-app \
-           --set backend.image.repository=${{needs.terraform.outputs.nexus_ip}}:8082/apex \
+           --set global.repository=${{ needs.terraform.outputs.nexus_ip }}:8082/apex \
            --set backend.image.tag=backend \
-           --set frontend.image.repository=${{needs.terraform.outputs.nexus_ip}}:8082/apex \
            --set frontend.image.tag=frontend

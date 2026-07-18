@@ -38,17 +38,21 @@ resource "helm_release" "nexus" {
     }],
 
     service = {
-      type = "NodePort"
-      ports = {
-        docker = {
-          enabled = true
-          port    = 8082
+      type      = "NodePort"
+      nexusPort = 8081
+    },
+
+    container = {
+      ports = [
+        {
+          containerPort = 8081
+          name          = "nexus-ui"
         },
-        nexus = {
-          enabled = true
-          port    = 8081
+        {
+          containerPort = 8082
+          name          = "docker-hosted"
         }
-      }
+      ]
     },
 
     livenessProbe = {

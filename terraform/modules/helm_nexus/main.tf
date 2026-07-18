@@ -89,6 +89,9 @@ resource "kubernetes_service" "apex-nexus-lb" {
       target_port = 8081
     }
   }
+  timeouts {
+    create = "60m"
+  }
 }
 
 terraform {

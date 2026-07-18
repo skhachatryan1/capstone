@@ -112,6 +112,13 @@ resource "nexus_repository_docker_hosted" "docker_registry" {
     strict_content_type_validation = true
     write_policy                   = "ALLOW"
   }
+
+  timeout {
+    create = "60m"
+    update = "40m"
+    delete = "40m"
+  }
+
 }
 
 resource "nexus_security_realms" "active_realms" {

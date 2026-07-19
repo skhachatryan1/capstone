@@ -24,3 +24,4 @@ coverage/
 /memory
 
 test-pull.yaml
+containerd-insecure-registry,yaml

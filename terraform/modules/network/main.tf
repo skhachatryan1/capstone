@@ -56,6 +56,7 @@ resource "google_compute_firewall" "apex-allow-kubectl" {
     ports    = ["443", "10250", "8081", "8082"]
   }
   source_ranges = ["0.0.0.0/0"]
+  source_tags   = ["apex-firewall"]
 }
 
 resource "google_compute_address" "ingress_ip" {

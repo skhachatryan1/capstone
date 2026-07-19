@@ -26,6 +26,7 @@ resource "google_container_node_pool" "app_nodes" {
     labels = {
       "workload" = "app"
     }
+    tags = ["apex-firewall"]
   }
 }
 resource "google_container_node_pool" "nexus_nodes" {
@@ -42,6 +43,8 @@ resource "google_container_node_pool" "nexus_nodes" {
     labels = {
       workload = "nexus"
     }
+    tags = ["apex-firewall"]
+
     taint {
       key    = "workload"
       value  = "nexus"
@@ -64,6 +67,8 @@ resource "google_container_node_pool" "monitoring_nodes" {
     labels = {
       workload = "monitoring"
     }
+    tags = ["apex-firewall"]
+
     taint {
       key    = "workload"
       value  = "monitoring"

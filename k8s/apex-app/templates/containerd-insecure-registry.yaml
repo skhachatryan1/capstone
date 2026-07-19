@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: containerd-insecure-registry
+  namespace: apex-app
+spec:
+  selector:
+    matchLabels: {app: containerd-insecure-registry}
+  template:
+    metadata:
+      labels: {app: containerd-insecure-registry}
+    spec:
+      hostPID: true
+      containers:
+      - name: configure
+        image: alpine:3.20
+        securityContext:
+          privileged: true
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          set -e
+          mkdir -p /host/etc/containerd/certs.d/${NEXUS_IP}:8082
+          cat <<EOF > /host/etc/containerd/certs.d/${NEXUS_IP}:8082/hosts.toml
+          server = "http://${NEXUS_IP}:8082"
+          [host."http://${NEXUS_IP}:8082"]
+            capabilities = ["pull", "resolve"]
+          EOF
+          nsenter -t 1 -m -- systemctl restart containerd
+          sleep infinity
+        env:
+        - name: NEXUS_IP
+          value: "REPLACED_BY_CD"
+        volumeMounts:
+        - {name: etc, mountPath: /host/etc}
+      volumes:
+      - name: etc
+        hostPath: {path: /etc}
+      tolerations:
+      - operator: Exists

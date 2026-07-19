@@ -142,7 +142,7 @@ jobs:
         env:
           NEXUS_IP: ${{ needs.terraform.outputs.nexus_ip }}
         run: |
-          sed "s/REPLACED_BY_CD/$NEXUS_IP" k8s/containerd-insecure-registry.yaml | kubectl apply -f -
+          sed "s/REPLACED_BY_CD/$NEXUS_IP/" k8s/containerd-insecure-registry.yaml | kubectl apply -f -
 
       - name: helm deploy
         run: |

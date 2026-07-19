@@ -138,12 +138,6 @@ jobs:
           helm upgrade --install apex-monitoring ./k8s/apex-monitoring \
           --namespace apex-monitoring
 
-      - name: configure containerd insecure registry
-        env:
-          NEXUS_IP: ${{ needs.terraform.outputs.nexus_ip }}
-        run: |
-          sed "s/REPLACED_BY_CD/$NEXUS_IP/" ./k8s/apex-app/templates/containerd-insecure-registry.yaml | kubectl apply -f -
-
       - name: helm deploy
         run: |
           helm upgrade --install apex ./k8s/apex-app \
